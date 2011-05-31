@@ -1,7 +1,13 @@
-require File.dirname(__FILE__) + '/../vendor/maruku/maruku'
+require 'rubygems'
+require 'sinatra'
+require 'syntax'
+require 'maruku'
 
-$LOAD_PATH.unshift File.dirname(__FILE__) + '/../vendor/syntax'
-require 'syntax/convertors/html'
+# require File.dirname(__FILE__) + '/../vendor/maruku/maruku'
+
+# $LOAD_PATH.unshift File.dirname(__FILE__) + '/../vendor/syntax'
+# require 'syntax/convertors/html'
+
 
 class Post < Sequel::Model
 	unless table_exists?
