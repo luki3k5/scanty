@@ -13,13 +13,13 @@ configure do
   
 	require 'ostruct'
 	Blog = OpenStruct.new(
-		:title => 'a scanty blog',
-		:author => 'John Doe',
-		:url_base => 'http://localhost:4567/',
-		:admin_password => 'changeme',
-		:admin_cookie_key => 'scanty_admin',
-		:admin_cookie_value => '51d6d976913ace58',
-		:disqus_shortname => nil
+		title: 'a scanty blog',
+		author: 'John Doe',
+		url_base: 'http://localhost:4567/',
+		admin_password: 'changeme',
+		admin_cookie_key: 'scanty_admin',
+		admin_cookie_value: '51d6d976913ace58',
+		disqus_shortname: nil
 	)
 end
 
@@ -43,20 +43,18 @@ helpers do
 	end
 end
 
-# layout 'layout'
-
 ### Public
 
 get '/' do
 	posts = Post.reverse_order(:created_at).limit(10)
-	haml :index, :locals => { :posts => posts }, :layout => false
+	haml :index, locals: { posts: posts }, layout: false
 end
 
 get '/past/:year/:month/:day/:slug/' do
-	post = Post.filter(:slug => params[:slug]).first
+	post = Post.filter(slug: params[:slug]).first
 	stop [ 404, "Page not found" ] unless post
 	@title = post.title
-	haml :post, :locals => { :post => post }
+	haml :post, locals: { post: post }
 end
 
 get '/past/:year/:month/:day/:slug' do
@@ -66,24 +64,28 @@ end
 get '/past' do
 	posts = Post.reverse_order(:created_at)
 	@title = "Archive"
-	haml :archive, :locals => { :posts => posts }
+	haml :archive, locals: { posts: posts }
 end
 
 get '/past/tags/:tag' do
 	tag = params[:tag]
 	posts = Post.filter(:tags.like("%#{tag}%")).reverse_order(:created_at).limit(30)
 	@title = "Posts tagged #{tag}"
-	haml :tagged, :locals => { :posts => posts, :tag => tag }
+	haml :tagged, locals: { posts: posts, tag: tag }
 end
 
 get '/feed' do
 	@posts = Post.reverse_order(:created_at).limit(20)
-	content_type 'application/atom+xml', :charset => 'utf-8'
+	content_type 'application/atom+xml', charset: 'utf-8'
 	builder :feed
 end
 
 get '/rss' do
 	redirect '/feed', 301
+end
+
+get '/posts' do
+  redirect '/', 301
 end
 
 ### Admin
@@ -99,26 +101,31 @@ end
 
 get '/posts/new' do
 	auth
-	haml :edit, :locals => { :post => Post.new, :url => '/posts' }
+	haml :edit, locals: { post: Post.new, url: '/posts' }
 end
 
 post '/posts' do
 	auth
-	post = Post.new :title => params[:title], :tags => params[:tags], :body => params[:body], :created_at => Time.now, :slug => Post.make_slug(params[:title])
+	post = Post.new( title: params[:title], 
+	                 tags: params[:tags], 
+	                 body: params[:body], 
+	                 created_at: Time.now, 
+	                 slug: Post.make_slug(params[:title])
+	               )
 	post.save
 	redirect post.url
 end
 
 get '/past/:year/:month/:day/:slug/edit' do
 	auth
-	post = Post.filter(:slug => params[:slug]).first
+	post = Post.filter(slug: params[:slug]).first
 	stop [ 404, "Page not found" ] unless post
-	haml :edit, :locals => { :post => post, :url => post.url }
+	haml :edit, locals: { post: post, url: post.url }
 end
 
 post '/past/:year/:month/:day/:slug/' do
 	auth
-	post = Post.filter(:slug => params[:slug]).first
+	post = Post.filter(slug: params[:slug]).first
 	stop [ 404, "Page not found" ] unless post
 	post.title = params[:title]
 	post.tags = params[:tags]

@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'sinatra'
-require 'syntax'
-require 'maruku'
+# require 'syntax'
+# require 'maruku'
 
 # require File.dirname(__FILE__) + '/../vendor/maruku/maruku'
 
